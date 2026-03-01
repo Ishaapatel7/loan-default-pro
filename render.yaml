@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: loan-default-backend
+    env: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    autoDeploy: true
+
+  - type: web
+    name: loan-default-frontend
+    env: static
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_BASE_URL
+        fromService:
+          type: web
+          name: loan-default-backend
+          property: hostport
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
