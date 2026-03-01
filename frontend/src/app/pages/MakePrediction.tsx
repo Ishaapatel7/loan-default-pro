@@ -125,7 +125,12 @@ export function MakePrediction() {
         HasCoSigner: formData.HasCoSigner,
       };
 
-      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "/api";
+      const configuredApiBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim();
+      const apiBaseUrl = configuredApiBaseUrl
+        ? /^https?:\/\//i.test(configuredApiBaseUrl)
+          ? configuredApiBaseUrl
+          : `https://${configuredApiBaseUrl}`
+        : "/api";
       const response = await fetch(`${apiBaseUrl}/predict`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
